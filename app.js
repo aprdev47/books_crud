@@ -1,4 +1,5 @@
 const http = require("http")
+const validator = require('./helpers/validate');
 let db=[]
 const server = http.createServer((request, response) => {
   let url = request.url
@@ -49,6 +50,12 @@ async function bodyParser(request) {
       })
   })
 }
+const validationRules = {
+    "author": "required|string",
+    "title": "required|string",
+    "isbn": "required|min:13",
+    "release_date": "string"
+}
 const getBooks = (request, response) => {
   response.writeHead(200, { "Content-Type": "application/json" })
   response.write(JSON.stringify(db))
@@ -56,58 +63,72 @@ const getBooks = (request, response) => {
 }
 
 async function addBook(request, response) {
-  try {
-    await bodyParser(request)
-    db.push(request.body)
-    response.writeHead(200, { "Content-Type": "application/json" })
-    response.write(JSON.stringify(db))
-    response.end()
-  } catch (err) {
-    response.writeHead(400, { "Content-type": "text/plain" })
-    response.write("Invalid body data was provided")
-    response.end()
-  }
+	await bodyParser(request)
+	validator(request.body, validationRules, {}, (err, status) => {
+        if (!status) {
+            response.writeHead(412, { "Content-Type": "application/json" })
+		    response.write(JSON.stringify(err))
+		    response.end()
+        } else {
+        	try {
+			    db.push(request.body)
+			    response.writeHead(200, { "Content-Type": "application/json" })
+			    response.write(JSON.stringify(db))
+			    response.end()
+			  } catch (err) {
+			    response.writeHead(400, { "Content-type": "text/plain" })
+			    response.write("Invalid body data was provided")
+			    response.end()
+			  }
+        }
+    });
 }
 
 
 async function updateBook(request, response) {
-  try {
-    // Getting url for request stream.
-    let url = request.url
+  await bodyParser(request)
+  validator(request.body, validationRules, {}, (err, status) => {
+        if (!status) {
+            response.writeHead(412, { "Content-Type": "application/json" })
+		    response.write(JSON.stringify(err))
+		    response.end()
+        } else {
+        	try {
+			    // Getting url for request stream.
+			    let url = request.url
+			    // Js string function to split url
+			    let idQuery = url.split("?")[1]
+			    let idKey = idQuery.split("=")[0] // index of our DB array which will be id
+			    let idValue = idQuery.split("=")[1] // Index Value
 
-    // Js string function to split url
-    let idQuery = url.split("?")[1]
-    let idKey = idQuery.split("=")[0] // index of our DB array which will be id
-    let idValue = idQuery.split("=")[1] // Index Value
-
-    if (idKey === "isbn") {
-      // Calling bodyParser to get Data from request stream
-    	await bodyParser(request)
-
-    	let book_index = db.findIndex(book => book.isbn === idValue)
-		if (book_index<0) {
-		   response.writeHead(400, { "Content-type": "text/plain" })
-	       response.write("Oops!! Book not found,please check the ISBN")
-	       response.end()
-		}  
-		else {
-			// Appending Request body into provided index
-	  		db[book_index] = request.body
-	  		response.writeHead(200, { "Content-Type": "application/json" })
-	        response.write(JSON.stringify(db))
-	        response.end()
-		}
-       
-    } else {
-      response.writeHead(400, { "Content-type": "text/plain" })
-      response.write("Invalid Query")
-      response.end()
-    }
-  } catch (err) {
-    response.writeHead(400, { "Content-type": "text/plain" })
-    response.write("Invalid body data was provided", err.message)
-    response.end()
-  }
+			    if (idKey === "isbn") {
+			    	let book_index = db.findIndex(book => book.isbn === idValue)
+					if (book_index<0) {
+					    response.writeHead(400, { "Content-type": "text/plain" })
+				        response.write("Oops!! Book not found,please check the ISBN")
+				        response.end()
+					}  
+					else {
+						// Appending Request body into provided index
+				  		db[book_index] = request.body
+				  		response.writeHead(200, { "Content-Type": "application/json" })
+				        response.write(JSON.stringify(db))
+				        response.end()
+					}
+			       
+			    } else {
+			        response.writeHead(400, { "Content-type": "text/plain" })
+			        response.write("Invalid Query")
+			        response.end()
+			    }
+			} catch (err) {
+			    response.writeHead(400, { "Content-type": "text/plain" })
+			    response.write("Invalid body data was provided", err.message)
+			    response.end()
+			}
+        }
+    });
+  
 }
 const deleteBook = (request, response) => {
   let url = request.url
