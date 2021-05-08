@@ -3,7 +3,7 @@ const rules = {
     "author": "required|string",
     "title": "required|string",
     "isbn": "required|min:13",
-    "release_date": "string"
+    "release_date": "date"
 }
 const validator = (body, callback) => {
     const validation = new Validator(body, rules, {});
