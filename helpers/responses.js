@@ -1,12 +1,10 @@
 function success(msg,res){
-	res.writeHead(200, { "Content-type": "text/plain" })
-	res.write(msg)
-	res.end()
+	data = {message:msg};
+	successData(data,res)
 }
 function error(code,msg,res){
-	res.writeHead(code, { "Content-type": "text/plain" })
-	res.write(msg)
-	res.end()
+	data = {message:msg};
+	errorData(code,data,res)
 }
 function successData(data,res){
 	res.writeHead(200, { "Content-Type": "application/json" })

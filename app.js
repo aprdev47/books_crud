@@ -1,8 +1,9 @@
 const http = require('http')
 const url = require('url')
+var qs = require('querystring');
 const books_controller = require('./controllers/books_controller');
 
-const server = http.createServer((req, res) => {
+http.createServer((req, res) => {
   let data = '';
   const path = url.parse(req.url, true).pathname;
   const query_object = url.parse(req.url, true).query;
@@ -31,13 +32,12 @@ const server = http.createServer((req, res) => {
         break
       }
     default:
-      res.writeHead(404, { "Content-type": "text/plain" })
-      res.write("Not Found")
+      res.writeHead(404, { "Content-type": "application/json" })
+      data = { message:"Not Found" };
+      res.write(JSON.stringify(data))
       res.end()
   }
-})
-
-server.listen(9000, () => {
+}).listen(9000, () => {
   console.log(`Server running on Port 9000`)
 })
 
