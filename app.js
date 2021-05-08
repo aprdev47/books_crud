@@ -36,8 +36,8 @@ http.createServer((req, res) => {
       res.write(JSON.stringify(data))
       res.end()
   }
-}).listen(8000, () => {
-  console.log(`Server running on Port 8000`)
+}).listen(80, () => {
+  console.log(`Server running on Port 80`)
 })
 
 
