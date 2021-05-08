@@ -1,7 +1,7 @@
 const validator = require('../helpers/validate');
 const respond = require('../helpers/responses');
 var sqlite = require('sqlite3').verbose();
-var db = new sqlite.Database('./database/books.db',sqlite3.OPEN_READWRITE)
+var db = new sqlite.Database('./database/books.db',sqlite.OPEN_READWRITE)
 db.run('CREATE TABLE IF NOT EXISTS books(author TEXT NOT NULL, title TEXT NOT NULL,isbn PRIMARY KEY NOT NULL,release_date TEXT)');
 
 async function bodyParser(request) {
