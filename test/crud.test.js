@@ -5,7 +5,7 @@ var expect = chai.expect
 var chaiHttp = require('chai-http')
 
 chai.use(chaiHttp)
-app_url = 'http://localhost:8000'
+app_url = 'http://localhost:80'
 describe('Books CRUD test', () => {
         it('Books list', (done) => {
             chai.request(app_url)
@@ -40,10 +40,10 @@ describe('Books CRUD test', () => {
 	    });
 	    it('Add new book functionality', (done) => {
 	        let book = {
-	          title: "The Lord of the Rings",
-	          author: "J.R.R. Tolkien",
-	          isbn: "9780563528883",
-	          release_date : "2002"
+	          title: "To Kill a Mockingbid",
+	          author: "Harper Lee",
+	          isbn: "9780060888695",
+	          release_date : "1960"
 	        }
 	        chai.request(app_url)
 	            .post('/books')
@@ -55,13 +55,13 @@ describe('Books CRUD test', () => {
 	    });
 	    it('Update existing book functionality', (done) => {
 	        let book = {
-	          title: "The Lord of the Rings_2",
-	          author: "J.R.R. Tolkien_3",
-	          isbn: "9780563528883",
-	          release_date : "2002"
+	          title: "To Kill a Mockingbird",
+	          author: "Harper Lee",
+	          isbn: "9780060888695",
+	          release_date : "1960"
 	        }
 	        chai.request(app_url)
-	            .put('/books?isbn=9780563528883')
+	            .put('/books?isbn=9780060888695')
 	            .send(book)
 	            .end((err, res) => {
 	                  expect(res).to.have.status(200)
@@ -70,7 +70,7 @@ describe('Books CRUD test', () => {
 	    });
 	    it('Book details with isbn', (done) => {
         chai.request(app_url)
-		    .get('/books?isbn=9780563528883')
+		    .get('/books?isbn=9780060888695')
 		    .end(function(err, res) {
 		        expect(err).to.be.null
 		        expect(res).to.have.status(200)
@@ -81,7 +81,7 @@ describe('Books CRUD test', () => {
       	});
     	it('Delete existing book functionality', (done) => {
             chai.request(app_url)
-            .delete('/books?isbn=9780563528883')
+            .delete('/books?isbn=9780060888695')
             .end((err, res) => {
                   expect(res).to.have.status(200)
               done();
